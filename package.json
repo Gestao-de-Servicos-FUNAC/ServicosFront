@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 4000",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -13,6 +13,7 @@
     "@radix-ui/react-label": "^2.1.4",
     "@radix-ui/react-slot": "^1.2.0",
     "@tabler/icons-react": "3.5.0",
+    "axios": "^1.9.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "flowbite": "2.3.0",
@@ -21,9 +22,11 @@
     "lucide-react": "^0.503.0",
     "moment": "2.29.4",
     "next": "14.2.4",
+    "nookies": "^2.5.2",
     "react": "18",
     "react-apexcharts": "1.4.1",
     "react-dom": "18",
+    "react-hook-form": "^7.56.4",
     "sharp": "0.32.6",
     "simplebar-react": "3.2.5",
     "tailwind-merge": "^3.2.0",

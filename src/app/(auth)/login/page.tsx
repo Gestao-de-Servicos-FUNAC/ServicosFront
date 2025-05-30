@@ -1,12 +1,22 @@
-// src/app/login/page.tsx
 "use client";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useAuth } from "@/hooks/useAuth";
+import { TLoginRequest } from "@/types/auth";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
 
 export default function LoginPage() {
+  const { register, handleSubmit } = useForm<TLoginRequest>();
+  const { signIn, loading } = useAuth();
+
+  const onSubmit = async (data: TLoginRequest) => {
+    try {
+      await signIn(data.login, data.password);
+    } catch (err) {}
+  };
   return (
     <div className="flex min-h-screen">
       <div className="hidden flex-1 lg:flex items-center justify-center bg-primary text-white rounded-3xl my-14 ml-14">
@@ -15,6 +25,7 @@ export default function LoginPage() {
           alt="Funac Logo"
           width={500}
           height={500}
+          priority
         />
       </div>
 
@@ -45,7 +56,7 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form className="space-y-4">
+          <form className="space-y-4" onSubmit={handleSubmit(onSubmit)}>
             <div className="space-y-1">
               <Label className="text-lg" htmlFor="email">
                 E-mail
@@ -55,6 +66,7 @@ export default function LoginPage() {
                 placeholder="Digite seu e-mail..."
                 type="email"
                 className="h-12 border-2 border-primary text-primary placeholder:text-primary"
+                {...register("login")}
               />
             </div>
 
@@ -67,6 +79,7 @@ export default function LoginPage() {
                 type="password"
                 placeholder="Digite sua senha..."
                 className="h-12 border-2 border-primary text-primary placeholder:text-primary"
+                {...register("password")}
               />
               <div className="text-right text-sm mt-1">
                 <a
@@ -78,8 +91,12 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button className="w-full bg-primary hover:bg-primary/90 text-white h-14">
-              ENTRAR
+            <Button
+              type="submit"
+              className="w-full bg-primary hover:bg-primary/90 text-white h-14"
+              disabled={loading}
+            >
+              {loading ? "Carregando..." : "Entrar"}
             </Button>
 
             <div className="text-center text-sm">
