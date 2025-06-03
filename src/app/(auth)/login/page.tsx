@@ -17,6 +17,7 @@ export default function LoginPage() {
       await signIn(data.login, data.password);
     } catch (err) {}
   };
+
   return (
     <div className="flex min-h-screen">
       <div className="hidden flex-1 lg:flex items-center justify-center bg-primary text-white rounded-3xl my-14 ml-14">
@@ -29,7 +30,6 @@ export default function LoginPage() {
         />
       </div>
 
-      {/* Right side with form */}
       <div className="flex-1 flex items-center justify-center p-8 ">
         <div className="w-full max-w-xl space-y-12">
           <div>
@@ -98,12 +98,6 @@ export default function LoginPage() {
             >
               {loading ? "Carregando..." : "Entrar"}
             </Button>
-
-            <div className="text-center text-sm">
-              <span className="text-muted-foreground font-bold text-lg">
-                Já tenho uma conta
-              </span>
-            </div>
           </form>
 
           <div className="flex justify-center gap-2 ">

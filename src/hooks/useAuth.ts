@@ -1,16 +1,17 @@
 import { useState } from "react";
-import { auth } from "@/api/services/auth.service";
 import { setCookie } from "nookies";
+import { loginUser } from "@/api/services/auth.service";
 
 export function useAuth() {
   const [loading, setLoading] = useState(false);
 
-  const signIn = async (login: string, password: string) => {
+  const signIn = async (login: string, senha: string) => {
     setLoading(true);
     try {
-      const { token } = await auth({ login, password });
+      const { token } = await loginUser({ login, senha });
+      console.log(token, "tolen");
       setCookie(undefined, "token", token, {
-        maxAge: 60 * 60 * 2, // 2h
+        maxAge: 60 * 60 * 2,
         path: "/",
       });
     } finally {
