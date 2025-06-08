@@ -2,19 +2,28 @@
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { InputError } from "@/components/ui/inputError";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/hooks/useAuth";
-import { TLoginRequest } from "@/types/auth";
+import { loginSchema, TLoginSchema } from "@/schemas/auth/loginSchema";
+import { yupResolver } from "@hookform/resolvers/yup";
 import Image from "next/image";
+import Link from "next/link";
 import { useForm } from "react-hook-form";
 
 export default function LoginPage() {
-  const { register, handleSubmit } = useForm<TLoginRequest>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<TLoginSchema>({
+    resolver: yupResolver(loginSchema),
+  });
   const { signIn, loading } = useAuth();
 
-  const onSubmit = async (data: TLoginRequest) => {
+  const onSubmit = async (data: TLoginSchema) => {
     try {
-      await signIn(data.login, data.password);
+      await signIn(data.email, data.password);
     } catch (err) {}
   };
   return (
@@ -66,8 +75,9 @@ export default function LoginPage() {
                 placeholder="Digite seu e-mail..."
                 type="email"
                 className="h-12 border-2 border-primary text-primary placeholder:text-primary"
-                {...register("login")}
+                {...register("email")}
               />
+              <InputError>{errors.email?.message}</InputError>
             </div>
 
             <div className="space-y-1">
@@ -81,6 +91,7 @@ export default function LoginPage() {
                 className="h-12 border-2 border-primary text-primary placeholder:text-primary"
                 {...register("password")}
               />
+              <InputError>{errors.password?.message}</InputError>
               <div className="text-right text-sm mt-1">
                 <a
                   href="#"
@@ -100,8 +111,11 @@ export default function LoginPage() {
             </Button>
 
             <div className="text-center text-sm">
-              <span className="text-muted-foreground font-bold text-lg">
-                Já tenho uma conta
+              <span className="text-muted-foreground font-bold text-lg ">
+                Ainda não tem uma conta?{" "}
+                <Link href="/register" className="hover:underline">
+                  Cadastre-se!
+                </Link>
               </span>
             </div>
           </form>
