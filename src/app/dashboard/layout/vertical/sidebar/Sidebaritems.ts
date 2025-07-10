@@ -49,56 +49,56 @@ const SidebarContent: MenuItem[] = [
         id: uniqueId(),
         url: "/projetos",
       },
-      {
-        name: "Almoxarifado",
-        icon: "solar:paperclip-outline",
-        id: uniqueId(),
-        url: "/almoxarifado",
-      },
+      // {
+      //   name: "Almoxarifado",
+      //   icon: "solar:paperclip-outline",
+      //   id: uniqueId(),
+      //   url: "/almoxarifado",
+      // },
       {
         name: "Serviços",
         icon: "solar:clipboard-list-outline",
         id: uniqueId(),
         children: [
           {
-            name: "Egressos",
+            name: "Pessoas",
             icon: "solar:user-plus-outline",
             id: uniqueId(),
-            url: "/servicos/cadastro-egressos",
+            url: "/servicos/pessoas",
           },
         ],
       },
-      {
-        name: "Frotas",
-        icon: "lucide:car",
-        id: uniqueId(),
-        children: [
-          {
-            name: "Veículo",
-            icon: "lucide:id-card",
-            id: uniqueId(),
-            url: "/frotas/veiculo",
-          },
-          {
-            name: "Condutor",
-            icon: "solar:user-outline",
-            id: uniqueId(),
-            url: "/frotas/condutor",
-          },
-          {
-            name: "Infrações",
-            icon: "solar:danger-circle-outline",
-            id: uniqueId(),
-            url: "/frotas/infracoes",
-          },
-          {
-            name: "Reservas",
-            icon: "solar:calendar-outline",
-            id: uniqueId(),
-            url: "/frotas/reservas",
-          },
-        ],
-      },
+      // {
+      //   name: "Frotas",
+      //   icon: "lucide:car",
+      //   id: uniqueId(),
+      //   children: [
+      //     {
+      //       name: "Veículo",
+      //       icon: "lucide:id-card",
+      //       id: uniqueId(),
+      //       url: "/frotas/veiculo",
+      //     },
+      //     {
+      //       name: "Condutor",
+      //       icon: "solar:user-outline",
+      //       id: uniqueId(),
+      //       url: "/frotas/condutor",
+      //     },
+      //     {
+      //       name: "Infrações",
+      //       icon: "solar:danger-circle-outline",
+      //       id: uniqueId(),
+      //       url: "/frotas/infracoes",
+      //     },
+      //     {
+      //       name: "Reservas",
+      //       icon: "solar:calendar-outline",
+      //       id: uniqueId(),
+      //       url: "/frotas/reservas",
+      //     },
+      //   ],
+      // },
       {
         name: "Relatórios",
         icon: "solar:chart-outline",

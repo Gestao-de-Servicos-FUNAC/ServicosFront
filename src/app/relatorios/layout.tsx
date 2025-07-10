@@ -1,7 +1,8 @@
 "use client";
 import React from "react";
-import Sidebar from "./layout/vertical/sidebar/Sidebar";
-import Header from "./layout/vertical/header/Header";
+import Sidebar from "../dashboard/layout/vertical/sidebar/Sidebar";
+// import Sidebar from "./layout/vertical/sidebar/Sidebar";
+import Header from "../dashboard/layout/vertical/header/Header";
 
 export default function Layout({
   children,

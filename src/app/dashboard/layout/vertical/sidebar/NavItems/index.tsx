@@ -11,26 +11,27 @@ interface NavItemsProps {
 }
 const NavItems: React.FC<NavItemsProps> = ({ item }) => {
   const pathname = usePathname();
+  const isActive = item.url === pathname;
   return (
     <>
       <Sidebar.Item
         href={item.url}
         as={Link}
         className={`${
-          item.url == pathname
-            ? "!text-white bg-primary shadow-active"
-            : "text-link bg-transparent group/link "
+          isActive
+            ? "!text-white !bg-primary shadow-active"
+            : "text-link bg-transparent group/link hover:bg-gray-100 dark:hover:bg-darkborder "
         } `}
       >
         <span className="flex gap-3 align-center items-center truncate">
           {item.icon ? (
-            <Icon icon={item.icon} className={`${item.color}`} height={18} />
+            <Icon icon={item.icon} className={`${ isActive ? "text-white" : item.color} transition-all duration-150`} height={18} />
           ) : (
             <span
-              className={`${
-                item.url == pathname
-                  ? "dark:bg-white rounded-full mx-1.5 group-hover/link:bg-primary !bg-primary h-[6px] w-[6px]"
-                  : "h-[6px] w-[6px] bg-darklink dark:bg-white rounded-full mx-1.5 group-hover/link:bg-primary"
+              className={`h-[6px] w-[6px] mx-1.5 rounded-full ${
+                isActive
+                  ? "!bg-white "
+                  : "bg-darklink dark:bg-white group-hover/link:bg-primary"
               } `}
             ></span>
           )}
