@@ -1,7 +1,7 @@
 import axios from "axios";
 import { getAuthToken } from "./services/auth.service";
 
-const baseURL = process.env.NEXT_PUBLIC_API_URL || "localhost" + ":3000";
+const baseURL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 if (!baseURL) {
   throw new Error("NEXT_PUBLIC_API_URL não definida.");

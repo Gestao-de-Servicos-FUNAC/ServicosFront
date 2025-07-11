@@ -10,10 +10,10 @@ export function useAuth() {
     try {
       const { token } = await loginUser({ login, senha });
       console.log(token, "tolen");
-      setCookie(undefined, "token", token, {
-        maxAge: 60 * 60 * 2,
-        path: "/",
-      });
+      // setCookie(undefined, "token", token, {
+        // maxAge: 60 * 60 * 2,
+        // path: "/",
+      // });
     } finally {
       setLoading(false);
     }

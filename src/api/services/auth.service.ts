@@ -26,9 +26,11 @@ export async function loginUser(req: {
     console.log("loginUser", req);
     const { data } = await api.post("/auth/login", req);
 
-    setAuthToken(data.token);
+    console.log("Teste", data.access_token);
+    
+    setAuthToken(data.access_token);
     window.location.href = "/";
-    return data;
+    return data.access_token;
   } catch (error) {
     console.error("Error during login:", error);
     throw new Error("Login failed. Please check your credentials.");
