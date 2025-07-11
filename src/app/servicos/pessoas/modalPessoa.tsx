@@ -36,7 +36,7 @@ export default function ModalPessoa({
         email: "",
         cpf: "",
         tipoPessoa: "",
-        dataNascimento: "",
+        dataNascimento: undefined,
         nomeSocial: "",
         genero: "",
         identidadeGenero: "",
@@ -58,7 +58,7 @@ export default function ModalPessoa({
                 email: "",
                 cpf: "",
                 tipoPessoa: "",
-                dataNascimento: "",
+                dataNascimento: undefined,
                 nomeSocial: "",
                 genero: "",
                 identidadeGenero: "",
@@ -110,7 +110,7 @@ export default function ModalPessoa({
               </div>
               <div>
                 <Label htmlFor="email" value="Email" />
-                <TextInput id="email" type="email" value={formData.email || ""} onChange={(e) => handleChange("email", e.target.value)} disabled={isViewMode} />
+                <TextInput id="email" type="email" value={formData.email || ""} onChange={(e) => handleChange("email", e.target.value)} required={!isViewMode} disabled={isViewMode} />
               </div>
               <div>
                 <Label htmlFor="tipoPessoa" value="Tipo de Pessoa" />
@@ -127,14 +127,10 @@ export default function ModalPessoa({
                 <Label htmlFor="dataNascimento" value="Data de Nascimento" />
                 <Datepicker
                   id="dataNascimento"
-                  value={formData.dataNascimento || ""}
+                  value={formData.dataNascimento}
                   onSelectedDateChanged={(date) => {
                     if (date) {
-                      const day = String(date.getDate()).padStart(2, "0");
-                      const month = String(date.getMonth() + 1).padStart(2, "0");
-                      const year = date.getFullYear();
-                      const formattedDate = `${day}/${month}/${year}`;
-                      handleChange("dataNascimento", formattedDate);
+                      handleChange("dataNascimento", date.toISOString());
                     } else {
                       handleChange("dataNascimento", "");
                     }

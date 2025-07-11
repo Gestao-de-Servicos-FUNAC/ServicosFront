@@ -84,7 +84,7 @@ export default function FiltroPessoa({ onFilter }: Props) {
                         ))}
                     </Select>
                 </div>
-                <div className="col-span-3">
+                {/* <div className="col-span-3">
                     <Label htmlFor="dataNascimento" value="Data de Nascimento" className="" />
                     <Datepicker
                         id="dataNascimento"
@@ -92,15 +92,11 @@ export default function FiltroPessoa({ onFilter }: Props) {
                         value={filtro.dataNascimento || ""}
                         accept="DD/MM/YYYY"
                         onSelectedDateChanged={(date) => {
-                            const day = String(date.getDate()).padStart(2, "0");
-                            const month = String(date.getMonth() + 1).padStart(2, "0");
-                            const year = date.getFullYear();
-                            const formattedDate = `${day}/${month}/${year}`;
-                            handleChange("dataNascimento", formattedDate);
+                            handleChange("dataNascimento", date.toISOString());
                         }}
                         className="input input-bordered w-full"
                     />
-                </div>
+                </div> */}
                 <div className="col-span-4 flex gap-3 items-end">
                     <Button color="blue" type="submit">
                         Filtrar

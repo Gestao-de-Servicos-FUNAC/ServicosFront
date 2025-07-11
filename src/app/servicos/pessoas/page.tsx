@@ -1,6 +1,6 @@
 "use client";
-import React, { useState } from "react";
-import { Table, Button, Badge } from "flowbite-react";
+import React, { useEffect, useState } from "react";
+import { Table, Button, Badge, Modal } from "flowbite-react";
 import { HiEye, HiPencilAlt, HiTrash } from "react-icons/hi";
 import SimpleBar from "simplebar-react";
 import FiltroPessoa from "./filtroPessoa";
@@ -8,43 +8,16 @@ import { Pessoa, PessoaFilterParams, PessoaModalMode } from "@/types/pessoa";
 import { set } from "lodash";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import ModalPessoa from "./modalPessoa";
-
-const pessoas: Pessoa[] = [
-  {
-    idPessoa: 1,
-    nomePessoa: "Carlos Henrique",
-    email: "carlos@example.com",
-    cpf: "111.111.111-11",
-    tipoPessoa: "ADMINISTRADOR",
-    dataNascimento: "15/05/1990",
-    status: 1,
-  },
-  {
-    idPessoa: 2,
-    nomePessoa: "Ana Souza",
-    email: "ana.souza@example.com",
-    cpf: "888.888.888-88",
-    tipoPessoa: "EGRESSO",
-    dataNascimento: "15/05/1990",
-    status: 1,
-  },
-  {
-    idPessoa: 3,
-    nomePessoa: "João Pedro",
-    email: "joao.pedro@example.com",
-    cpf: "999.999.999-99",
-    tipoPessoa: "DEPENDENTE_EGRESSO",
-    dataNascimento: "15/05/1990",
-    status: 0,
-  },
-];
+import { atualizarPessoa, cadastrarPessoa, listarPessoas, removerPessoa } from "@/hooks/pessoa";
 
 const PessoaListPage = () => {
 
-  const [pessoaList, setPessoaList] = useState(pessoas);
+  const [pessoaList, setPessoaList] = useState<Pessoa[]>([]);
   const [modalOpen, setModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState<PessoaModalMode>('create');
   const [selectedPessoa, setSelectedPessoa] = useState<Pessoa | undefined>();
+  const [modalExcluirOpen, setModalExcluirOpen] = useState(false);
+  const [pessoaParaExcluir, setPessoaParaExcluir] = useState<Pessoa | null>(null);
 
   const columns = [
     { key: "nomePessoa", name: "Nome" },
@@ -55,8 +28,18 @@ const PessoaListPage = () => {
     { key: "acoes", name: "Ações" },
   ];
 
-  const handleFilter = (filterParams: PessoaFilterParams) => {
-    const filteredList = pessoas.filter((pessoa) => {
+  useEffect(() => {
+    listarDados()
+  }, [])
+
+  const listarDados = async () => {
+    const response = await listarPessoas();
+    setPessoaList(response.pessoas);
+  }
+
+  const handleFilter = async (filterParams: PessoaFilterParams) => {
+    const response = await listarPessoas();
+    const filteredList = response.pessoas.filter((pessoa) => {
       return (
         (!filterParams.nome || pessoa.nomePessoa.toLowerCase().includes(filterParams.nome.toLowerCase())) &&
         (!filterParams.cpf || pessoa.cpf.includes(filterParams.cpf)) &&
@@ -79,15 +62,39 @@ const PessoaListPage = () => {
     setModalOpen(true);
   };
 
-  const handleSubmit = (formData: Pessoa) => {
-    console.log("Form Data:", formData);
+  const handleSubmit = async (formData: Pessoa) => {
     if (modalMode === 'create') {
-      console.log("Cadastrado", formData);
+      const response = await cadastrarPessoa(formData);
+      listarDados();
     } else if (modalMode === 'edit' && selectedPessoa) {
-      console.log("Editado", formData);
+      const response = await atualizarPessoa(formData);
+      listarDados();
     }
     handleModalClose();
   };
+
+  const deletar = async (idPessoa: number) => {
+    await removerPessoa(idPessoa);
+    listarDados();
+  }
+
+  const abrirModalExcluir = (pessoa: Pessoa) => {
+    setPessoaParaExcluir(pessoa);
+    setModalExcluirOpen(true);
+  };
+
+  const fecharModalExcluir = () => {
+    setPessoaParaExcluir(null);
+    setModalExcluirOpen(false);
+  };
+
+  const confirmarExclusao = async () => {
+    if (pessoaParaExcluir) {
+      await deletar(pessoaParaExcluir.idPessoa);
+      fecharModalExcluir();
+    }
+  };
+
 
   return (
     <div className="rounded-xl dark:shadow-dark-md shadow-md bg-white dark:bg-darkgray p-6 relative w-full break-words">
@@ -126,8 +133,8 @@ const PessoaListPage = () => {
                             <HiPencilAlt className="w-4 h-4" />
                           </Button>
                           <Button size="xs" color="failure" onClick={() => {
-                            console.log(pessoa);
-                          }}>
+                            abrirModalExcluir(pessoa)
+                          }} disabled={pessoa.tipoPessoa == "ADMINISTRADOR"}>
                             <HiTrash className="w-4 h-4" />
                           </Button>
                         </div>
@@ -150,6 +157,26 @@ const PessoaListPage = () => {
         onSubmit={handleSubmit}
         onClose={handleModalClose}
       />
+
+      <Modal show={modalExcluirOpen} onClose={fecharModalExcluir}>
+        <Modal.Header>Confirmação de Exclusão</Modal.Header>
+        <Modal.Body>
+          <div className="text-center">
+            <h3 className="mb-5 text-lg font-normal text-gray-700 dark:text-gray-300">
+              Deseja realmente excluir <strong>{pessoaParaExcluir?.nomePessoa}</strong>?
+            </h3>
+            <div className="flex justify-center gap-4 mt-6">
+              <Button color="failure" onClick={confirmarExclusao}>
+                Confirmar
+              </Button>
+              <Button color="gray" onClick={fecharModalExcluir}>
+                Cancelar
+              </Button>
+            </div>
+          </div>
+        </Modal.Body>
+      </Modal>
+
     </div >
   );
 };
