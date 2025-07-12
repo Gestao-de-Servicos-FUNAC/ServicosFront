@@ -1,90 +1,145 @@
 "use client";
+import { buscarEgressoPorPessoa } from "@/hooks/egresso";
+import { buscarPessoaPorId } from "@/hooks/pessoa";
+import { Egresso } from "@/types/egresso";
 import { Pessoa, PessoaModalMode } from "@/types/pessoa";
 import { Button, Datepicker, Label, Modal, Select, TextInput } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 
 
 interface Props {
-    open: boolean;
-    mode: PessoaModalMode;
-    pessoa?: Pessoa;
-    onClose: () => void;
-    onSubmit: (pessoa: Pessoa) => void;
+  open: boolean;
+  mode: PessoaModalMode;
+  pessoa?: Pessoa;
+  onClose: () => void;
+  onSubmit: (pessoaEgresso: Egresso) => void;
 }
 
 const tipos = [
-    "EGRESSO",
-    "DEPENDENTE_EGRESSO",
-    "FUNCIONARIO",
-    "ADMINISTRADOR",
+  "EGRESSO",
+  "DEPENDENTE_EGRESSO",
+  // "FUNCIONARIO",
+  // "ADMINISTRADOR",
+]
+
+const regimePena = [
+  'Aberto',
+  'Semi Aberto',
+  'Fechado'
 ]
 
 export default function ModalPessoa({
-    open,
-    mode,
-    pessoa,
-    onClose,
-    onSubmit
+  open,
+  mode,
+  pessoa,
+  onClose,
+  onSubmit
 }: Props) {
-    const isViewMode = mode === 'view';
-    const isEditMode = mode === 'edit';
-    const isCreateMode = mode === 'create';
+  const isViewMode = mode === 'view';
+  const isEditMode = mode === 'edit';
+  const isCreateMode = mode === 'create';
 
-    const [formData, setFormData] = useState<Pessoa>({
-        idPessoa: 0,
-        nomePessoa: "",
-        email: "",
-        cpf: "",
-        tipoPessoa: "",
-        dataNascimento: undefined,
-        nomeSocial: "",
-        genero: "",
-        identidadeGenero: "",
-        orientacaoSexual: "",
-        nacionalidade: "",
-        raca: "",
-        status: 1,
-    });
-
-    useEffect(() => {
-        if (pessoa && (mode === 'edit' || mode === 'view')) {
-            setFormData({
-                ...pessoa,
-            });
-        } else if (mode === 'create') {
-            setFormData({
-                idPessoa: 0,
-                nomePessoa: "",
-                email: "",
-                cpf: "",
-                tipoPessoa: "",
-                dataNascimento: undefined,
-                nomeSocial: "",
-                genero: "",
-                identidadeGenero: "",
-                orientacaoSexual: "",
-                nacionalidade: "",
-                raca: "",
-                status: 1,
-            });
-        }
-    }, [pessoa, mode]);
-
-    const handleChange = (key: keyof Pessoa, value: string | number) => {
-        setFormData((prev) => ({
-            ...prev,
-            [key]: value,
-        }));
+  const [formData, setFormData] = useState<Egresso>({
+    idenEgresso: 0,
+    contaBancaria: "",
+    regimePena: "",
+    pessoa: {
+      idPessoa: 0,
+      nomePessoa: "",
+      email: "",
+      cpf: "",
+      tipoPessoa: "",
+      dataNascimento: undefined,
+      nomeSocial: "",
+      genero: "",
+      identidadeGenero: "",
+      orientacaoSexual: "",
+      nacionalidade: "",
+      raca: "",
+      status: 1,
     }
+  });
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        if (isCreateMode || isEditMode) {
-            onSubmit(formData);
+  useEffect(() => {
+    if (pessoa && (mode === 'edit' || mode === 'view')) {
+      if (pessoa.tipoPessoa == "EGRESSO") {
+        buscarEgresso(pessoa.idPessoa).then((pessoaEgresso) => {
+          setFormData({
+            idenEgresso: pessoaEgresso.idenEgresso,
+            contaBancaria: pessoaEgresso.contaBancaria,
+            regimePena: pessoaEgresso.regimePena,
+            pessoa: pessoa,
+          })
+        })
+      } else {
+        setFormData({
+          idenEgresso: 0,
+          contaBancaria: "",
+          regimePena: "",
+          pessoa: pessoa,
+        });
+      }
+
+    } else if (mode === 'create') {
+      setFormData({
+        idenEgresso: 0,
+        contaBancaria: "",
+        regimePena: "",
+        pessoa: {
+          idPessoa: 0,
+          nomePessoa: "",
+          email: "",
+          cpf: "",
+          tipoPessoa: "",
+          dataNascimento: undefined,
+          nomeSocial: "",
+          genero: "",
+          identidadeGenero: "",
+          orientacaoSexual: "",
+          nacionalidade: "",
+          raca: "",
+          status: 1,
         }
-    };
+      });
+    }
+  }, [pessoa, mode]);
 
-   return (
+  useEffect(() => {
+    if (formData) {
+      console.log(formData);
+    }
+  }, [formData])
+
+  const buscarEgresso = async (idPessoa: number) => {
+    const pessoaEgresso = await buscarEgressoPorPessoa(idPessoa);
+    return pessoaEgresso;
+  }
+
+  const handleChange = (key: keyof Egresso, value: string | number) => {
+    setFormData((prev) => ({
+      ...prev,
+      [key]: value,
+    }));
+  }
+
+  const handlePessoaChange = (key: keyof Pessoa, value: string | number | undefined) => {
+    setFormData((prev) => ({
+      ...prev,
+      pessoa: {
+        ...prev.pessoa,
+        [key]: value,
+      },
+    }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (isCreateMode || isEditMode) {
+      onSubmit(formData);
+    }
+  };
+
+  return (
     <div className="w-full sm:w-2/3 mx-auto">
       <Modal show={open} onClose={onClose} popup>
         <Modal.Header />
@@ -97,24 +152,24 @@ export default function ModalPessoa({
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="nomePessoa" value="Nome" />
-                <TextInput id="nomePessoa" value={formData.nomePessoa} onChange={(e) => handleChange("nomePessoa", e.target.value)} disabled={isViewMode} required={!isViewMode} />
+                <Label htmlFor="pessoa.nomePessoa" value="Nome" />
+                <TextInput id="pessoa.nomePessoa" value={formData.pessoa.nomePessoa} onChange={(e) => handlePessoaChange("nomePessoa", e.target.value)} disabled={isViewMode} required={!isViewMode} />
               </div>
               <div>
-                <Label htmlFor="nomeSocial" value="Nome Social" />
-                <TextInput id="nomeSocial" value={formData.nomeSocial || ""} onChange={(e) => handleChange("nomeSocial", e.target.value)} disabled={isViewMode} />
+                <Label htmlFor="pessoa.nomeSocial" value="Nome Social" />
+                <TextInput id="pessoa.nomeSocial" value={formData.pessoa.nomeSocial || ""} onChange={(e) => handlePessoaChange("nomeSocial", e.target.value)} disabled={isViewMode} />
               </div>
               <div>
-                <Label htmlFor="cpf" value="CPF" />
-                <TextInput id="cpf" value={formData.cpf} onChange={(e) => handleChange("cpf", e.target.value)} disabled={isViewMode} required={!isViewMode} />
+                <Label htmlFor="pessoa.cpf" value="CPF" />
+                <TextInput id="pessoa.cpf" value={formData.pessoa.cpf} onChange={(e) => handlePessoaChange("cpf", e.target.value)} disabled={isViewMode} required={!isViewMode} />
               </div>
               <div>
-                <Label htmlFor="email" value="Email" />
-                <TextInput id="email" type="email" value={formData.email || ""} onChange={(e) => handleChange("email", e.target.value)} required={!isViewMode} disabled={isViewMode} />
+                <Label htmlFor="pessoa.email" value="Email" />
+                <TextInput id="pessoa.email" type="email" value={formData.pessoa.email || ""} onChange={(e) => handlePessoaChange("email", e.target.value)} required={!isViewMode} disabled={isViewMode} />
               </div>
               <div>
-                <Label htmlFor="tipoPessoa" value="Tipo de Pessoa" />
-                <Select id="tipoPessoa" value={formData.tipoPessoa || ""} onChange={(e) => handleChange("tipoPessoa", e.target.value)} disabled={isViewMode} required={!isViewMode}>
+                <Label htmlFor="pessoa.tipoPessoa" value="Tipo de Pessoa" />
+                <Select id="pessoa.tipoPessoa" value={formData.pessoa.tipoPessoa} onChange={(e) => handlePessoaChange("tipoPessoa", e.target.value)} disabled={isViewMode} required={!isViewMode}>
                   <option value="">Selecione o tipo</option>
                   {tipos.map((tipo) => (
                     <option key={tipo} value={tipo}>
@@ -124,40 +179,56 @@ export default function ModalPessoa({
                 </Select>
               </div>
               <div>
-                <Label htmlFor="dataNascimento" value="Data de Nascimento" />
+                <Label htmlFor="pessoa.dataNascimento" value="Data de Nascimento" />
                 <Datepicker
-                  id="dataNascimento"
-                  value={formData.dataNascimento}
+                  id="pessoa.dataNascimento"
+                  value={formData.pessoa.dataNascimento}
                   onSelectedDateChanged={(date) => {
                     if (date) {
-                      handleChange("dataNascimento", date.toISOString());
+                      handlePessoaChange("dataNascimento", date.toISOString());
                     } else {
-                      handleChange("dataNascimento", "");
+                      handlePessoaChange("dataNascimento", "");
                     }
                   }}
+                  showTodayButton={false}
+                  showClearButton={false}
+                  labelClearButton="Limpar"
                   disabled={isViewMode}
                 />
               </div>
               <div>
-                <Label htmlFor="genero" value="Gênero" />
-                <TextInput id="genero" value={formData.genero || ""} onChange={(e) => handleChange("genero", e.target.value)} disabled={isViewMode} />
+                <Label htmlFor="pessoa.genero" value="Gênero" />
+                <TextInput id="pessoa.genero" value={formData.pessoa.genero || ""} onChange={(e) => handlePessoaChange("genero", e.target.value)} disabled={isViewMode} />
               </div>
               <div>
-                <Label htmlFor="identidadeGenero" value="Identidade de Gênero" />
-                <TextInput id="identidadeGenero" value={formData.identidadeGenero || ""} onChange={(e) => handleChange("identidadeGenero", e.target.value)} disabled={isViewMode} />
+                <Label htmlFor="pessoa.identidadeGenero" value="Identidade de Gênero" />
+                <TextInput id="pessoa.identidadeGenero" value={formData.pessoa.identidadeGenero || ""} onChange={(e) => handlePessoaChange("identidadeGenero", e.target.value)} disabled={isViewMode} />
               </div>
               <div>
-                <Label htmlFor="orientacaoSexual" value="Orientação Sexual" />
-                <TextInput id="orientacaoSexual" value={formData.orientacaoSexual || ""} onChange={(e) => handleChange("orientacaoSexual", e.target.value)} disabled={isViewMode} />
+                <Label htmlFor="pessoa.orientacaoSexual" value="Orientação Sexual" />
+                <TextInput id="pessoa.orientacaoSexual" value={formData.pessoa.orientacaoSexual || ""} onChange={(e) => handlePessoaChange("orientacaoSexual", e.target.value)} disabled={isViewMode} />
               </div>
               <div>
-                <Label htmlFor="nacionalidade" value="Nacionalidade" />
-                <TextInput id="nacionalidade" value={formData.nacionalidade || ""} onChange={(e) => handleChange("nacionalidade", e.target.value)} disabled={isViewMode} />
+                <Label htmlFor="pessoa.nacionalidade" value="Nacionalidade" />
+                <TextInput id="pessoa.nacionalidade" value={formData.pessoa.nacionalidade || ""} onChange={(e) => handlePessoaChange("nacionalidade", e.target.value)} disabled={isViewMode} />
               </div>
               <div>
-                <Label htmlFor="raca" value="Raça" />
-                <TextInput id="raca" value={formData.raca || ""} onChange={(e) => handleChange("raca", e.target.value)} disabled={isViewMode} />
+                <Label htmlFor="pessoa.raca" value="Raça" />
+                <TextInput id="pessoa.raca" value={formData.pessoa.raca || ""} onChange={(e) => handlePessoaChange("raca", e.target.value)} disabled={isViewMode} />
               </div>
+              {formData.pessoa.tipoPessoa == "EGRESSO" && (
+                <div>
+                  <Label htmlFor="regimePenal" value="Tipo de Pessoa" />
+                  <Select id="regimePenal" value={formData.regimePena} onChange={(e) => handleChange("regimePena", e.target.value)} disabled={isViewMode} required={!isViewMode}>
+                    <option value="">Selecione o Regime Penal</option>
+                    {regimePena.map((tipo) => (
+                      <option key={tipo} value={tipo}>
+                        {tipo}
+                      </option>
+                    ))}
+                  </Select>
+                </div>
+              )}
             </div>
             <div className="flex justify-end gap-3 pt-4">
               {!isViewMode ? (

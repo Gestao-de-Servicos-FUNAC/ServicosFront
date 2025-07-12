@@ -9,6 +9,8 @@ import { set } from "lodash";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import ModalPessoa from "./modalPessoa";
 import { atualizarPessoa, cadastrarPessoa, listarPessoas, removerPessoa } from "@/hooks/pessoa";
+import { Egresso } from "@/types/egresso";
+import { atualizarEgresso, buscarEgressoPorPessoa, criarEgresso, removerEgresso } from "@/hooks/egresso";
 
 const PessoaListPage = () => {
 
@@ -62,18 +64,51 @@ const PessoaListPage = () => {
     setModalOpen(true);
   };
 
-  const handleSubmit = async (formData: Pessoa) => {
+  const handleSubmit = async (formData: Egresso) => {
     if (modalMode === 'create') {
-      const response = await cadastrarPessoa(formData);
+      const pessoa = await cadastrarPessoa(formData.pessoa);
+      if (formData.pessoa.tipoPessoa == "EGRESSO") {
+        console.log();
+
+        const response = await criarEgresso({
+          contaBancaria: formData.contaBancaria,
+          idPessoa: pessoa.idPessoa,
+          regimePena: formData.regimePena
+        });
+      }
       listarDados();
     } else if (modalMode === 'edit' && selectedPessoa) {
-      const response = await atualizarPessoa(formData);
+      const pessoa = await atualizarPessoa(formData.pessoa);
+      if (formData.pessoa.tipoPessoa == "EGRESSO") {
+        const egresso = await buscarEgressoPorPessoa(formData.pessoa.idPessoa);
+        if (egresso != null) {
+          const response = await atualizarEgresso({
+            contaBancaria: formData.contaBancaria,
+            idPessoa: pessoa.idPessoa,
+            regimePena: formData.regimePena
+          });
+        } else {
+          const response = await criarEgresso({
+            contaBancaria: formData.contaBancaria,
+            idPessoa: pessoa.idPessoa,
+            regimePena: formData.regimePena
+          });
+        }
+      }
       listarDados();
     }
     handleModalClose();
   };
 
   const deletar = async (idPessoa: number) => {
+    try {
+      const egresso = await buscarEgressoPorPessoa(idPessoa);
+      await removerEgresso(egresso.idenEgresso);
+    } catch (error) {
+
+    }
+    // if (egresso) {
+    // }
     await removerPessoa(idPessoa);
     listarDados();
   }
