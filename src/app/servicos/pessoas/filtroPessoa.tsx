@@ -7,7 +7,7 @@ interface Props {
     onFilter: (params: PessoaFilterParams) => void;
 }
 
-const tipos = ["EGRESSO", "DEPENDENTE_EGRESSO", "FUNCIONARIO", "ADMINISTRADOR"];
+const tipos = ["EGRESSO", "DEPENDENTE_EGRESSO"];
 
 export default function FiltroPessoa({ onFilter }: Props) {
     const [filtro, setFiltro] = useState<PessoaFilterParams>({
