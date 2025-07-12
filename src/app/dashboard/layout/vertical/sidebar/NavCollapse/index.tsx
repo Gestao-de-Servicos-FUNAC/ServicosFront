@@ -23,9 +23,8 @@ const NavCollapse: React.FC<NavCollapseProps> = ({ item }: any) => {
         label={item.name}
         open={activeDD ? true : false}
         icon={() => <Icon icon={item.icon} height={18} />}
-        className={`${
-          activeDD ? "!text-primary bg-lightprimary " : ""
-        } collapse-menu`}
+        className={`${activeDD ? "!text-primary bg-lightprimary " : ""
+          } collapse-menu`}
         renderChevronIcon={(theme, open) => {
           const IconComponent = open
             ? HiOutlineChevronDown
@@ -48,7 +47,7 @@ const NavCollapse: React.FC<NavCollapseProps> = ({ item }: any) => {
                 {child.children ? (
                   <NavCollapse item={child} />
                 ) : (
-                  <NavItems item={child} />
+                  <NavItems item={child} nested={true} />
                 )}
               </React.Fragment>
             ))}
